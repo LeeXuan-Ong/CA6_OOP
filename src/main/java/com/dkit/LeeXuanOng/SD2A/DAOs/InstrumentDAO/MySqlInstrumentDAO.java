@@ -6,11 +6,45 @@ import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
 
+    public Set<Integer> getAllIds() throws DAOException {
+        Set<Integer> ids = null;
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try{
+            connection = this.getConnection();
+            String query = "SELECT insId FROM INSTRUMENTS";
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()){
+                ids.add(rs.getInt("insId"));
+            }
+        } catch (SQLException e){
+            throw new DAOException("getAllIds() " + e.getMessage());
+        } finally {
+            try{
+                if(rs != null){
+                    rs.close();
+                }
+                if(ps != null){
+                    ps.close();
+                }
+                if(connection != null){
+                    this.freeConnection(connection);
+                }
+            } catch (SQLException e) {
+                throw new DAOException("getAllIds() " + e.getMessage());
+            }
+        }
+        return ids;
+    }
     @Override
     public List<Instrument> findAllInstruments() throws DAOException {
         Connection connection = null;
@@ -30,7 +64,7 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
                 String instrumentDescription = rs.getString("insDesc");
                 double insPrice = rs.getDouble("insPrice");
                 String insCategory = rs.getString("insCategory");
-                Instrument i = new Instrument(instrumentId, insName, insCategory, insStock, insPrice, insCategory);
+                Instrument i = new Instrument(instrumentId, insName, instrumentDescription, insStock, insPrice, insCategory);
                 instrumentsList.add(i);
             }
         } catch (SQLException e) {
@@ -73,7 +107,7 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
                 String instrumentDescription = rs.getString("insDesc");
                 double insPrice = rs.getDouble("insPrice");
                 String insCategory = rs.getString("insCategory");
-                i = new Instrument(instrumentId, insName, insCategory, insStock, insPrice, insCategory);
+                i = new Instrument(instrumentId, insName, instrumentDescription, insStock, insPrice, insCategory);
             }
         } catch (SQLException e) {
             throw new DAOException("findInstrumentByInstrumentId() " + e.getMessage());
@@ -94,6 +128,54 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
         }
         return i;
+    }
+
+    @Override
+    public List<Instrument> findInstrumentsUsingFilter(Comparator<Instrument> comparator) throws DAOException {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Instrument> instrumentsList = new ArrayList<>();
+
+        try {
+            connection = this.getConnection();
+            String query = "SELECT * FROM INSTRUMENTS";
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int instrumentId = rs.getInt("insId");
+                String insName = rs.getString("insName");
+                int insStock = rs.getInt("insStocks");
+                String instrumentDescription = rs.getString("insDesc");
+                double insPrice = rs.getDouble("insPrice");
+                String insCategory = rs.getString("insCategory");
+                Instrument i = new Instrument(instrumentId, insName, instrumentDescription, insStock, insPrice, insCategory);
+                instrumentsList.add(i);
+            }
+        } catch (SQLException e) {
+            throw new DAOException("findInstrumentsUsingFilter() " + e.getMessage());
+        } finally {
+            try{
+                if(rs != null){
+                    rs.close();
+                }
+                if(ps != null){
+                    ps.close();
+                }
+                if(connection != null){
+                    this.freeConnection(connection);
+                }
+            } catch (SQLException e) {
+                throw new DAOException("findInstrumentsUsingFilter() " + e.getMessage());
+            }
+
+        }
+        instrumentsList.sort(comparator);
+        for(Instrument i : instrumentsList){
+            System.out.println(i);
+        }
+
+        return instrumentsList;
     }
 
     @Override
@@ -130,7 +212,7 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
     public int addInstrument(Instrument instrument) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
-        int result = -1;
+        int result;
         ResultSet rs = null;
 
 
@@ -139,7 +221,7 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
             String query = "INSERT INTO INSTRUMENTS (insName, insStocks, insDesc, insPrice, insCategory) VALUES (?,?,?,?,?)";
             ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, instrument.getInsName());
-            ps.setInt(2, instrument.getInsStrock());
+            ps.setInt(2, instrument.getInsStock());
             ps.setString(3, instrument.getInsDesc());
             ps.setDouble(4, instrument.getInsPrice());
             ps.setString(5, instrument.getInsCategory());
