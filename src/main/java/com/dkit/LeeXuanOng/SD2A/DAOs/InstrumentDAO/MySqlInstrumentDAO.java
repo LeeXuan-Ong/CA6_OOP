@@ -3,10 +3,8 @@ package com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO;
 import com.dkit.LeeXuanOng.SD2A.DAOException.DAOException;
 import com.dkit.LeeXuanOng.SD2A.DAOs.DAO;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +20,13 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
         try {
             connection = this.getConnection();
-            String query = "SELECT * FROM INSTRUMENT";
+            String query = "SELECT * FROM INSTRUMENTS";
             ps = connection.prepareStatement(query);
             rs = ps.executeQuery();
             while (rs.next()) {
                 int instrumentId = rs.getInt("insId");
                 String insName = rs.getString("insName");
-                int insStock = rs.getInt("insStock");
+                int insStock = rs.getInt("insStocks");
                 String instrumentDescription = rs.getString("insDesc");
                 double insPrice = rs.getDouble("insPrice");
                 String insCategory = rs.getString("insCategory");
@@ -65,13 +63,13 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
         try {
             connection = this.getConnection();
-            String query = "SELECT * FROM INSTRUMENT WHERE insId = ?";
+            String query = "SELECT * FROM INSTRUMENTS WHERE insId = ?";
             ps = connection.prepareStatement(query);
             ps.setInt(1, instrumentId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 String insName = rs.getString("insName");
-                int insStock = rs.getInt("insStock");
+                int insStock = rs.getInt("insStocks");
                 String instrumentDescription = rs.getString("insDesc");
                 double insPrice = rs.getDouble("insPrice");
                 String insCategory = rs.getString("insCategory");
@@ -106,7 +104,7 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
         try {
             connection = this.getConnection();
-            String query = "DELETE FROM INSTRUMENT WHERE insId = ?";
+            String query = "DELETE FROM INSTRUMENTS WHERE insId = ?";
             ps = connection.prepareStatement(query);
             ps.setInt(1, instrumentId);
             result = ps.executeUpdate();
@@ -129,22 +127,34 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
     }
 
     @Override
-    public boolean addInstrument(Instrument instrument) throws DAOException {
+    public int addInstrument(Instrument instrument) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
-        int result = 0;
-        Instrument instruemnt = null;
+        int result = -1;
+        ResultSet rs = null;
+
 
         try{
             connection = this.getConnection();
-            String query = "INSERT INTO INSTRUMENT (insName, insStock, insDesc, insPrice, insCategory) VALUES (?,?,?,?,?)";
-            ps = connection.prepareStatement(query);
+            String query = "INSERT INTO INSTRUMENTS (insName, insStocks, insDesc, insPrice, insCategory) VALUES (?,?,?,?,?)";
+            ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, instrument.getInsName());
             ps.setInt(2, instrument.getInsStrock());
             ps.setString(3, instrument.getInsDesc());
             ps.setDouble(4, instrument.getInsPrice());
             ps.setString(5, instrument.getInsCategory());
             result = ps.executeUpdate();
+
+            if(result == 1){
+                System.out.println("Instrument added");
+                //get the generated key
+
+                rs = ps.getGeneratedKeys();
+                if(rs.next()){
+                    result =  rs.getInt(1);
+                }
+            }
+
         } catch (SQLException e) {
             throw new DAOException("addInstrument() " + e.getMessage());
         } finally {
@@ -160,6 +170,6 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
             }
 
         }
-        return (result == 1);
+       return result;
     }
 }

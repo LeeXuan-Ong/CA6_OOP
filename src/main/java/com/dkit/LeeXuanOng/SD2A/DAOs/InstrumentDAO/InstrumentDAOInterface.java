@@ -13,5 +13,5 @@ public interface InstrumentDAOInterface {
 
     public boolean deleteInstrument(int instrumentId) throws DAOException;
 
-    public boolean addInstrument(Instrument instrument) throws DAOException;
+    public int addInstrument(Instrument instrument) throws DAOException;
 }
