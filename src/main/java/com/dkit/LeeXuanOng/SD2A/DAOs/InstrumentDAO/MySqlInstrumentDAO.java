@@ -1,20 +1,17 @@
 package com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO;
 
-import com.dkit.LeeXuanOng.SD2A.DAOException.DAOException;
+import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
 import com.dkit.LeeXuanOng.SD2A.DAOs.DAO;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
 
     public Set<Integer> getAllIds() throws DAOException {
-        Set<Integer> ids = null;
+        Set<Integer> ids = new HashSet<>();
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;

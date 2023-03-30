@@ -1,9 +1,7 @@
 package com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO;
 
-import com.dkit.LeeXuanOng.SD2A.DAOException.DAOException;
+import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

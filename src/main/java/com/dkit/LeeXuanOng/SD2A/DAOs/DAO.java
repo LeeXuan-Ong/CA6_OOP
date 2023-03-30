@@ -2,8 +2,7 @@ package com.dkit.LeeXuanOng.SD2A.DAOs;
 
 import java.sql.*;
 
-import java.util.Queue;
-import com.dkit.LeeXuanOng.SD2A.DAOException.DAOException;
+import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
 
 
 /** MySqlDao -

@@ -1,4 +1,4 @@
-package com.dkit.LeeXuanOng.SD2A.DAOException;
+package com.dkit.LeeXuanOng.SD2A.DAOExceptions;
 
 import java.sql.SQLException;
 
