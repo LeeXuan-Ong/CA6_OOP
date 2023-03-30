@@ -19,7 +19,7 @@ public class DAO {
     public Connection getConnection() throws DAOException
     {
         String driver = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/user_database";
+        String url = "jdbc:mysql://localhost:3306/instrument_data";
         String username = "root";
         String password = "";
         Connection connection = null;
@@ -63,9 +63,8 @@ public class DAO {
         int id = 0;
         try{
             Connection connection = this.getConnection();
-            String query = "SELECT LAST_INSERT_ID(?);";
+            String query = "SELECT LAST_INSERT_ID();";
             PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1,table);
             ResultSet result = ps.executeQuery();
             if(result.next()){
                 id = result.getInt(1);
