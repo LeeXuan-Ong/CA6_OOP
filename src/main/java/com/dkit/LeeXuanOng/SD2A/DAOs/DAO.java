@@ -15,10 +15,25 @@ import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
  */
 public class DAO {
 
+    protected boolean test_database = false;
+
+
+    public boolean getTest_database() {
+        return test_database;
+    }
+    public void isTest_database(){
+        this.test_database = !this.test_database;
+    }
+
     public Connection getConnection() throws DAOException
     {
         String driver = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/instrument_data";
+        String url;
+        if(test_database){
+             url = "jdbc:mysql://localhost:3306/instrument_data_testing";
+        } else {
+             url = "jdbc:mysql://localhost:3306/instrument_data";
+        }
         String username = "root";
         String password = "";
         Connection connection = null;
@@ -48,7 +63,6 @@ public class DAO {
             if (connection != null)
             {
                 connection.close();
-                connection = null;
             }
         }
         catch (SQLException e)
