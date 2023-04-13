@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS `insturment_data`;
-CREATE DATABASE `insturment_data`;
+DROP DATABASE IF EXISTS `insturment_data_test`;
+CREATE DATABASE `insturment_data_test`;
 
 DROP TABLE IF EXISTS `instruments`;
 CREATE TABLE `instruments` (
