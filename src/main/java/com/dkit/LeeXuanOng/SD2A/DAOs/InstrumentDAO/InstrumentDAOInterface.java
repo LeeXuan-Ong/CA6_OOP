@@ -20,4 +20,7 @@ public interface InstrumentDAOInterface {
     public int addInstrument(Instrument instrument) throws DAOException;
 
     public Set<Integer> getAllIds() throws DAOException;
+
+    public String findAllInstrumentsJson() throws DAOException;
+    public String findInstrumentByInstrumentIdJson(int instrumentId) throws DAOException;
 }

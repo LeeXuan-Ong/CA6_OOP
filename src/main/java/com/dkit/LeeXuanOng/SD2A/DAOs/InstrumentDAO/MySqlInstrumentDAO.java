@@ -3,11 +3,13 @@ package com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO;
 import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
 import com.dkit.LeeXuanOng.SD2A.DAOs.DAO;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
+import com.google.gson.Gson;
 
 import java.sql.*;
 import java.util.*;
 
 public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
+
 
 
     public Set<Integer> getAllIds() throws DAOException {
@@ -168,11 +170,29 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
 
         }
         instrumentsList.sort(comparator);
-        for(Instrument i : instrumentsList){
-            System.out.println(i);
-        }
-
         return instrumentsList;
+    }
+
+
+    @Override
+    public String findAllInstrumentsJson() throws DAOException {
+        List<Instrument> list = findAllInstruments();
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        return json;
+    }
+
+    @Override
+    public String findInstrumentByInstrumentIdJson(int instrumentId) throws DAOException {
+        Instrument i = findInstrumentByInstrumentId(instrumentId);
+        Gson gson = new Gson();
+        if(i != null){
+            String json = gson.toJson(i);
+            return json;
+        } else {
+            String json = gson.toJson("ErrorMessage : Instrument not found");
+            return json;
+        }
     }
 
     @Override
@@ -238,6 +258,9 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
             throw new DAOException("addInstrument() " + e.getMessage());
         } finally {
             try{
+                if(rs != null){
+                    rs.close();
+                }
                 if(ps != null){
                     ps.close();
                 }
