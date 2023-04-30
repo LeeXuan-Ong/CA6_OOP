@@ -3,6 +3,7 @@ package com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO;
 import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
 import com.dkit.LeeXuanOng.SD2A.DAOs.DAO;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
+import com.dkit.LeeXuanOng.SD2A.FilterComparator.IFilter;
 import com.google.gson.Gson;
 
 import java.sql.*;
@@ -130,7 +131,7 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
     }
 
     @Override
-    public List<Instrument> findInstrumentsUsingFilter(Comparator<Instrument> comparator) throws DAOException {
+    public List<Instrument> findInstrumentsUsingFilter(IFilter filter, Comparator<Instrument> comparator) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -169,7 +170,12 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
             }
 
         }
-        instrumentsList.sort(comparator);
+
+        for(Instrument i : instrumentsList){
+            if(!filter.matches(i)){
+                instrumentsList.remove(i);
+            }
+        }
         return instrumentsList;
     }
 

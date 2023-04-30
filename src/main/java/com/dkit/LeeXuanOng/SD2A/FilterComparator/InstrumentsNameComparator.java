@@ -1,4 +1,4 @@
-package com.dkit.LeeXuanOng.SD2A.Comparator;
+package com.dkit.LeeXuanOng.SD2A.FilterComparator;
 
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
 

@@ -1,13 +1,10 @@
 package com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO;
 
-import com.dkit.LeeXuanOng.SD2A.Comparator.InstrumentsIDComparator;
-import com.dkit.LeeXuanOng.SD2A.Comparator.InstrumentsNameComparator;
-import com.dkit.LeeXuanOng.SD2A.Comparator.InstrumentsPriceComparator;
+import com.dkit.LeeXuanOng.SD2A.FilterComparator.*;
 import com.dkit.LeeXuanOng.SD2A.DAOExceptions.DAOException;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -75,8 +72,9 @@ public class MySqlInstrumentDAOTest {
     @Test
     public void testFindInstrumentsUsingFilterID() throws DAOException {
         Comparator<Instrument> InstrumentsIDComparator = new InstrumentsIDComparator();
-        List<Instrument> actual = m.findInstrumentsUsingFilter(InstrumentsIDComparator);
-        List<Instrument> expected = m.findInstrumentsUsingFilter(Comparator.comparingInt(Instrument::getId));
+        IFilter filter = new InstrumentIDFilter(1);
+        List<Instrument> actual = m.findInstrumentsUsingFilter(filter,InstrumentsIDComparator);
+        List<Instrument> expected = m.findInstrumentsUsingFilter(filter,Comparator.comparingInt(Instrument::getId));
         for(int i = 0; i < actual.size(); i++){
             if(!actual.get(i).equals(expected.get(i))){
                 fail();
@@ -87,9 +85,10 @@ public class MySqlInstrumentDAOTest {
 
     @Test
     public void testFindInstrumentsUsingFilterName() throws DAOException {
-        List<Instrument> expected = m.findInstrumentsUsingFilter(Comparator.comparing(Instrument::getInsName));
+        IFilter filter = new InstrumentNameFilter("Guitar");
+        List<Instrument> expected = m.findInstrumentsUsingFilter(filter,Comparator.comparing(Instrument::getInsName));
         Comparator<Instrument> InstrumentsNameComparator = new InstrumentsNameComparator();
-        List<Instrument> actual = m.findInstrumentsUsingFilter(InstrumentsNameComparator);
+        List<Instrument> actual = m.findInstrumentsUsingFilter(filter,InstrumentsNameComparator);
         for(int i = 0; i < actual.size(); i++){
             if(!actual.get(i).equals(expected.get(i))){
                 fail();
@@ -100,9 +99,10 @@ public class MySqlInstrumentDAOTest {
 
     @Test
     public void testFindInstrumentsUsingFilterPrice() throws DAOException {
-        List<Instrument> expected = m.findInstrumentsUsingFilter(Comparator.comparing(Instrument::getInsPrice));
+        IFilter filter = new InstrumentPriceFilter(50,100);
+        List<Instrument> expected = m.findInstrumentsUsingFilter(filter,Comparator.comparing(Instrument::getInsPrice));
         Comparator<Instrument> InstrumentsPriceComparator = new InstrumentsPriceComparator();
-        List<Instrument> actual = m.findInstrumentsUsingFilter(InstrumentsPriceComparator);
+        List<Instrument> actual = m.findInstrumentsUsingFilter(filter,InstrumentsPriceComparator);
         for(int i = 0; i < actual.size(); i++){
             if(!actual.get(i).equals(expected.get(i))){
                 fail();

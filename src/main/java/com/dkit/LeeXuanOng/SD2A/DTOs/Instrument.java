@@ -20,11 +20,11 @@ public class Instrument {
         this.insCategory = insCategory;
     }
 
-    public Instrument(String insName, String insDesc, int insStrock, double insPrice, String insCategory) {
+    public Instrument(String insName, String insDesc, int insStock, double insPrice, String insCategory) {
         //id need to be a new id that get from the mysql db;
         this.insName = insName;
         this.insDesc = insDesc;
-        this.insStock = insStrock;
+        this.insStock = insStock;
         this.insPrice = insPrice;
         this.insCategory = insCategory;
     }
