@@ -19,8 +19,10 @@ package com.dkit.LeeXuanOng.SD2A.client;
  */
 
 
+import com.dkit.LeeXuanOng.SD2A.DTOs.DeserializationInstrument;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,6 +47,7 @@ public class Client
         System.out.println("2. Find all instruments ");
         System.out.println("3. Add Instrument");
         System.out.println("4. Delete Instrument");
+
     }
 
 
@@ -54,19 +57,23 @@ public class Client
         try {
             Socket socket = new Socket("localhost", 8080);  // connect to server socket
             System.out.println("Client: Port# of this client : " + socket.getLocalPort());
-            System.out.println("Client: Port# of Server :" + socket.getPort() );
+            System.out.println("Client: Port# of Server :" + socket.getPort());
 
             System.out.println("Client message: The Client is running and has connected to the server");
-//            String command = in.nextLine();
-            Gson gson = new Gson();
-            String command = "";
-            int choice = 0;
-            OutputStream os = socket. getOutputStream();
+            OutputStream os = socket.getOutputStream();
             PrintWriter socketWriter = new PrintWriter(os, true);   // true => auto flush buffers
+            Scanner socketReader = new Scanner(socket.getInputStream());  // wait for, and retrieve the reply
+            int choice;
+            do {
+
+//            String command = in.nextLine();
+                Gson gson = new GsonBuilder().registerTypeAdapter(Instrument.class, new DeserializationInstrument()).create();
+                String command = "";
+                choice = 0;
                 clientMenu();
                 choice = in.nextInt();
                 System.out.println("You have chosen " + choice);
-                switch(choice){
+                switch (choice) {
                     case 1:
                         System.out.println("Please enter the ID of the instrument you want to find");
                         command = "findInstrumentByInstrumentIdJson%" + in.nextInt();
@@ -75,17 +82,19 @@ public class Client
                         command = "findAllInstrumentsJson";
                         break;
                     case 3:
-                        System.out.println("Please enter the name of the instrument you want to add");
-                        String name = in.next();
+                        System.out.print("Please enter the name of the instrument you want to add");
+                        String name = in.nextLine();
                         System.out.println("Please enter the description of the instrument you want to add");
-                        String desc = in.next();
+                        String desc = in.nextLine();
                         System.out.println("Please enter the category of the instrument you want to add");
-                        String category = in.next();
+                        String category = in.nextLine();
                         System.out.println("Please enter the cost of the instrument you want to add");
-                        double cost = in.nextDouble();
+                        String temp = in.nextLine();
+                        double cost = Double.parseDouble(temp);
                         System.out.println("Please enter the stock of the instrument you want to add");
-                        int stock = in.nextInt();
-                        Instrument instrument = new Instrument( name, desc,stock, cost,category);
+                        temp = in.nextLine();
+                        int stock = Integer.parseInt(temp);
+                        Instrument instrument = new Instrument(name, desc, stock, cost, category);
                         String json = gson.toJson(instrument);
                         command = "addInstrument%" + json;
                         break;
@@ -101,34 +110,35 @@ public class Client
                         break;
                 }
 
-            socketWriter.println(command);
+                socketWriter.println(command);
 
-            Scanner socketReader = new Scanner(socket.getInputStream());  // wait for, and retrieve the reply
-            String reply = socketReader.nextLine();
-            System.out.println("Client message: Reply from Server -> ");
 
-            String[] token = reply.split("%");
-            if(Objects.equals(token[0], "ALLINSTRUMENTSJSON")){
-                System.out.println("All instruments");
-                Instrument[] instruments = gson.fromJson(token[1], Instrument[].class);
-                for(Instrument i : instruments){
-                    System.out.println(i.toString());
+                String reply = socketReader.nextLine();
+                System.out.println("Client message: Reply from Server -> ");
+
+                String[] token = reply.split("%");
+                if (Objects.equals(token[0], "ALLINSTRUMENTSJSON")) {
+                    System.out.println("All instruments");
+                    Instrument[] instruments = gson.fromJson(token[1], Instrument[].class);
+                    for (Instrument i : instruments) {
+                        System.out.println(i.toString());
+                    }
+                } else if (Objects.equals(token[0], "INSTRUMENTBYIDJSON")) {
+                    Instrument instrument = gson.fromJson(token[1], Instrument.class);
+                    System.out.println(instrument.toString());
+                } else if (Objects.equals(token[0], "INSTRUMENTADDED")) {
+                    Instrument instrument = gson.fromJson(token[1], Instrument.class);
+                    System.out.println("Added instrument: " + instrument.toString());
+                } else if (Objects.equals(token[0], "INSTRUMENTDELETED")) {
+
+                    System.out.println("Deleted instrument with ID: " + token[1]);
+                } else {
+                    System.out.println(reply);
                 }
-            } else if(Objects.equals(token[0], "INSTRUMENTJSON")){
-                Instrument instrument = gson.fromJson(token[1], Instrument.class);
-                System.out.println(instrument.toString());
-            } else if(Objects.equals(token[0], "INSTRUMENTADDED")){
-                Instrument instrument = gson.fromJson(token[1], Instrument.class);
-                System.out.println("Added instrument: " + instrument.toString());
-            } else if(Objects.equals(token[0], "INSTRUMENTDELETED")){
-                System.out.println("Deleted instrument with ID: " + token[1]);
-            } else {
-                System.out.println(reply);
-            }
+            } while (choice != 6);
             socketWriter.close();
             socketReader.close();
             socket.close();
-
         } catch (IOException e) {
             System.out.println("Client message: IOException: "+e);
         }

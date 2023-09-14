@@ -6,7 +6,6 @@ import com.dkit.LeeXuanOng.SD2A.DAOs.InstrumentDAO.MySqlInstrumentDAO;
 import com.dkit.LeeXuanOng.SD2A.DTOs.Instrument;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -40,18 +39,18 @@ public class Server
                 System.out.println("Server: Port# of remote client: " + socket.getPort());
                 System.out.println("Server: Port# of this server: " + socket.getLocalPort());
 
-                Thread thread = new Thread(new ClientHandler(socket,clientNumber));
+                Thread thread = new Thread(new ClientHandler(socket, clientNumber));
                 thread.start();
                 System.out.println("Server: ClientHandler started in thread for client " + clientNumber + ". ");
                 System.out.println("Server: Listening for further connections...");
             }
-        } catch (IOException e) {
+        } catch (IOException | SecurityException | IllegalArgumentException e) {
             System.out.println("Server Message: \nException: "+e);
 
         }
     }
 
-    public class ClientHandler implements Runnable{
+    public static class ClientHandler implements Runnable{
 
         BufferedReader socketReader;
         PrintWriter socketWriter;
@@ -130,9 +129,10 @@ public class Server
                     } else if(temp[0].startsWith("deleteInstrument")){
                         try{
                             int id = Integer.parseInt(temp[1]);
+                            System.out.println(id);
                             if(cache.contains(id)){
                                 if(m.deleteInstrument(id)){
-                                    reply = "INSTRUMENTDELETED";
+                                    reply = "INSTRUMENTDELETED%"+id;
                                 } else {
                                     reply = "ERROR";
                                 }
@@ -158,7 +158,7 @@ public class Server
                             if(cache.contains(Integer.parseInt(temp[1]))){
                                 reply = "INSTRUMENTBYIDJSON%"+m.findInstrumentByInstrumentIdJson(Integer.parseInt(temp[1]));
                             } else {
-                                reply = "ERROR";
+                                reply = "Not Found";
                             }
                         } catch (NumberFormatException e){
                             reply = "Please enter a valid number";

@@ -14,6 +14,10 @@ public class InstrumentPriceFilter implements IFilter{
         @Override
         public boolean matches(Object other) {
             Instrument i = (Instrument) other;
-            return i.getInsPrice() >= min && i.getInsPrice() <= max;
+            if( i.getInsPrice() >= min && i.getInsPrice() <= max){
+                return true;
+            } else {
+                return false;
+            }
         }
 }

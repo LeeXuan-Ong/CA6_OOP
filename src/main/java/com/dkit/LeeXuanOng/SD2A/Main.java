@@ -10,8 +10,15 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         try{
-            int input = sc.nextInt();
-            menu(input);
+            while(true){
+                System.out.println("1. findAllInstruments \n2. findInstrumentByInstrumentId \n3. addInstrument \n4. deleteInstrument \n5. findInstrumentsUsingFilter \n6. Instrument JSON\n7. Instrument ID\n0. Exit");
+                System.out.println("Please enter your choice: ");
+                int input = sc.nextInt();
+                if(input == 0){
+                    break;
+                }
+                menu(input);
+            }
         } catch (InputMismatchException e){
             System.out.println("Invalid input");
         }
@@ -25,7 +32,7 @@ public class Main {
             ids = m.getAllIds();
             switch (input){
                 case 1:
-                    m.findAllInstruments();
+                    System.out.println(m.findAllInstruments());
                     break;
                 case 2:
                     int input2 = sc.nextInt();
@@ -48,13 +55,23 @@ public class Main {
                     System.out.println(m.deleteInstrument(input3));
                     break;
                 case 5:
+                    System.out.println("1. Name\n2. Price\n");
                     int input4 = sc.nextInt();
-//                    if(input4 == 1)
-//                        System.out.println(m.findInstrumentsUsingFilter(new InstrumentNameFilter("test")));
-//                    else if(input4 == 2)
-//                        System.out.println(m.findInstrumentsUsingFilter(new InstrumentPriceFilter(12,23)));
-//                    else if(input4 == 3)
-//                        System.out.println(m.findInstrumentsUsingFilter(new InstrumentIDFilter(12)));
+                    if(input4 == 1){
+                        List<Instrument> list = m.findInstrumentsUsingFilter(new InstrumentNameFilter("Guitar"),new InstrumentsNameComparator());
+                        for (Instrument i : list) {
+                            System.out.println(i);
+                        }
+                    }
+                    else if(input4 == 2){
+                        List<Instrument> list = m.findInstrumentsUsingFilter(new InstrumentPriceFilter(90, 200),new InstrumentsPriceComparator());
+                        for (Instrument i : list) {
+                            System.out.println(i);
+                        }
+                    }
+                    else
+                        System.out.println("Invalid input");
+//
                     break;
                 case 6:
                     System.out.println(m.findAllInstrumentsJson());

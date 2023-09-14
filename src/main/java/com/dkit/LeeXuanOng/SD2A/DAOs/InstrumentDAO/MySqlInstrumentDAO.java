@@ -170,13 +170,14 @@ public class MySqlInstrumentDAO extends DAO implements InstrumentDAOInterface {
             }
 
         }
-
+        List<Instrument> filteredList = new ArrayList<>();
         for(Instrument i : instrumentsList){
-            if(!filter.matches(i)){
-                instrumentsList.remove(i);
+            if(filter.matches(i)){
+                filteredList.add(i);
             }
         }
-        return instrumentsList;
+        Collections.sort(filteredList, comparator);
+        return filteredList;
     }
 
 
